@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.4">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;TSC Grid Label System&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>body { font-family: -apple-system, sans-serif; padding: 25px; text-align: center; background: #fafafa; color: #333; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.wrapper { max-width: 480px; margin: 30px auto; background: white; padding: 30px; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #eaeaea; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>h2 { margin-top: 0; color: #111; font-size: 22px; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>button { padding: 16px; font-size: 16px; font-weight: bold; margin: 15px 0; cursor: pointer; border-radius: 8px; border: none; width: 100%; transition: opacity 0.2s; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-blue { background: #0066cc; color: white; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-blue:active { opacity: 0.8; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>input { padding: 14px; font-size: 18px; width: 90%; margin: 15px 0; text-align: center; border: 2px solid #ccc; border-radius: 8px; box-sizing: border-box; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>input:focus { border-color: #0066cc; outline: none; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>#status { padding: 14px; background: #f1f3f5; border-radius: 8px; font-size: 15px; font-weight: bold; margin-top: 15px; word-break: break-word; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.ready { background: #d4edda !important; color: #155724; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="wrapper"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;h2&gt;Asymmetric Label Dashboard&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;p style="font-size: 13px; color: #666; margin-bottom: 20px;"&gt;Splits label: Left 25% for QR | Right 75% for Content Text.&lt;/p&gt;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="btn-blue" id="actionBtn" onclick="pairTscPrinter()"&gt;Connect Alpha-30RB (Bluetooth)&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;input type="text" id="upcBox" placeholder="Scan UPC Code Here..." onkeypress="handleUpcScan(event)" disabled&gt;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="status"&gt;Waiting for Bluetooth Printer Link...&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// ⚠️ PASTE YOUR GOOGLE WEB APP MACRO URL LINK INSIDE THE QUOTES BELOW:</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const GOOGLE_API_LINK = "https://script.google.com/a/macros/zomato.com/s/AKfycbyG7d8zZvM3pIyXMAS1eH8t5JC8k2G3uMH3PxnIIbbCtdxByXxCAas6aFvEzYbabCEc/exec";<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>let tscBleCharacteristic = null;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 1. Establish direct pairing connection using Google Chrome Web Bluetooth features</p>
+<p class="p1"><span class="Apple-converted-space">    </span>async function pairTscPrinter() {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const log = document.getElementById('status');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>log.innerText = "Searching for your TSC Printer...";</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const selectedDevice = await navigator.bluetooth.requestDevice({</p>
+<p class="p1"><span class="Apple-converted-space">                </span>filters: [{ namePrefix: 'Alpha-30' }, { namePrefix: 'TSC' }],</p>
+<p class="p1"><span class="Apple-converted-space">                </span>optionalServices: ['00001101-0000-1000-8000-00805f9b34fb'] // SPP Profile</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>log.innerText = "Connecting to device server cards...";</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const openGatt = await selectedDevice.gatt.connect();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const targetService = await openGatt.getPrimaryService('00001101-0000-1000-8000-00805f9b34fb');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>tscBleCharacteristic = await targetService.getCharacteristic('00001101-0000-1000-8000-00805f9b34fb');</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>log.innerText = "Printer Paired &amp; Ready!";</p>
+<p class="p1"><span class="Apple-converted-space">            </span>log.className = "ready";</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('upcBox').disabled = false;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('upcBox').focus();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('actionBtn').style.display = 'none';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>} catch (failReason) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>log.innerText = "Bluetooth Setup Error: " + failReason;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>console.error(failReason);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 2. Catch Scanner Input Event Actions</p>
+<p class="p1"><span class="Apple-converted-space">    </span>async function handleUpcScan(event) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (event.key === 'Enter') {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const upcQuery = document.getElementById('upcBox').value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const log = document.getElementById('status');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('upcBox').value = ''; // Flush input field immediately</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (!upcQuery) return;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>log.innerText = `Searching records for UPC: ${upcQuery}...`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>log.className = "";</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const networkResponse = await fetch(GOOGLE_API_LINK);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const databaseRows = await networkResponse.json();</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Match the scanned UPC value against Column A data</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const matchedRecord = databaseRows.find(entry =&gt; entry.upc === upcQuery);</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (matchedRecord) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>log.innerText = "Match located! Dispatched to printer module...";</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>await executeAsymmetricPrint(matchedRecord.qrData, matchedRecord.label1, matchedRecord.label2);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>log.innerText = `UPC "${upcQuery}" could not be found in your Google Sheet.`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} catch (networkError) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>log.innerText = "Data Retrieval Error: " + networkError;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 3. Compile layout geometry variables and write safely across Bluetooth communication card ports</p>
+<p class="p1"><span class="Apple-converted-space">    </span>async function executeAsymmetricPrint(qrString, label1String, label2String) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Precise structural ZPL template coordinates requested</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const structuredZpl =<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>"^XA\n" +</p>
+<p class="p1"><span class="Apple-converted-space">            </span>"^PW576\n" +<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>"^LL406\n" +<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>"^FO15,15^GB546,376,4^FS\n" +<span class="Apple-converted-space">                </span>// Border Container</p>
+<p class="p1"><span class="Apple-converted-space">            </span>"^FO160,15^GB0,376,3^FS\n" + <span class="Apple-converted-space">                </span>// Vertical 25% Grid Separator Line</p>
+<p class="p1"><span class="Apple-converted-space">            </span>"^FO160,203^GB401,0,3^FS\n" +<span class="Apple-converted-space">                </span>// Horizontal 50/50 Right Splitter Line</p>
+<p class="p1"><span class="Apple-converted-space">            </span>"^FO30,80^BQN,2,5^FDQA," + qrString + "^FS\n" + // QR Location (Left)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>"^FO180,35^A0N,20,20^FDLABEL 1:^FS\n" +</p>
+<p class="p1"><span class="Apple-converted-space">            </span>"^FO180,65^A0N,26,24^FB360,4,0,L^FD" + label1String + "^FS\n" + // Label 1 Top Text Block</p>
+<p class="p1"><span class="Apple-converted-space">            </span>"^FO180,223^A0N,20,20^FDLABEL 2:^FS\n" +</p>
+<p class="p1"><span class="Apple-converted-space">            </span>"^FO180,253^A0N,26,24^FB360,4,0,L^FD" + label2String + "^FS\n" + // Label 2 Bottom Text Block</p>
+<p class="p1"><span class="Apple-converted-space">            </span>"^XZ\n";</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Transmit string mapped to raw data bytes</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const encoderObj = new TextEncoder();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const binaryPayload = encoderObj.encode(structuredZpl);</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Safety protocol: Stream data chunks over 128 byte bounds to ensure mobile devices don't drop text</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const packetBound = 128;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>for (let position = 0; position &lt; binaryPayload.byteLength; position += packetBound) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const chunkSlice = binaryPayload.slice(position, position + packetBound);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>await tscBleCharacteristic.writeValue(chunkSlice);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>await new Promise(done =&gt; setTimeout(done, 40)); // Short 40ms channel buffer rest</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('status').innerText = "Label Output Success!";</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('status').className = "ready";</p>
+<p class="p1"><span class="Apple-converted-space">        </span>} catch (printFailure) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('status').innerText = "Hardware Writing Interrupted: " + printFailure;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
